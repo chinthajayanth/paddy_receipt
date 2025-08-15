@@ -1,0 +1,91 @@
+body {
+    font-family: "Inter", sans-serif;
+    background-color: #f0f4f8; /* Light background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensure it takes full viewport height */
+    padding: 2rem 1rem; /* Overall padding, adjust for mobile */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.form-container {
+    /* Set the image as background */
+    background-image: url('recipet_L.jpeg'); /* Updated image path */
+    background-size: 100% 100%; /* Make background image fill the container exactly */
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative; /* Crucial for absolute positioning of children */
+    
+    /* Define container dimensions for A4 aspect ratio (approx 210x297mm) */
+    /* Base width of 1240px, and padding-bottom maintains aspect ratio for A4 */
+    /* This aims for ~2480px width in the final JPEG with scale: 2 */
+    width: 1240px; 
+    max-width: 100%; /* Ensure it's responsive */
+    height: 0; /* Important when using padding-bottom for aspect ratio */
+    padding-bottom: 141.45%; /* (297/210) * 100% = 141.428% rounded up for aspect ratio */
+    overflow: hidden; /* Hide overflow from absolute children */
+
+    /* Optional: Add a subtle shadow or border if desired, even though image is background */
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    background-color: transparent; /* Ensure container itself is transparent */
+    margin-bottom: 2rem; /* Space between form and button */
+}
+
+/* Styling for the overlaid input fields */
+.form-input-overlay {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white to allow image lines to show */
+    border: 1px solid rgba(0, 0, 0, 0.2); /* Light border to define input area */
+    outline: none; /* Remove default focus outline */
+    color: black; /* Text color */
+    font-size: 1.1rem; /* Adjust font size to fit the lines on the image */
+    padding: 0.1rem 0.3rem; /* Minimal padding inside the input */
+    border-radius: 0.2rem; /* Small rounded corners */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    line-height: normal; /* Ensures text aligns well within the input box */
+    text-align: left; /* Default text alignment */
+}
+
+.form-input-overlay:focus {
+    border-color: #4299e1; /* Blue border on focus */
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5); /* Blue glow on focus */
+}
+
+.download-button {
+    background-color: #4299e1; /* bg-blue-500 */
+    color: white;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    font-weight: 1000; /* font-bold */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+    border: none;
+    display: block; /* Make it a block element to center with margin */
+    margin: 2rem auto 0 auto; /* Center button and add top margin */
+}
+.download-button:hover {
+    background-color: #3182ce; /* hover:bg-blue-600 */
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+.download-button:active {
+    transform: translateY(0); /* Press effect */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+    .form-container {
+        width: 100%; /* Take full width on smaller screens */
+        /* padding-bottom will automatically adjust height based on aspect ratio */
+    }
+    .form-input-overlay {
+        font-size: 0.75rem; /* Smaller font on small screens for better fit */
+        padding: 0; /* Remove padding to maximize space */
+    }
+}
