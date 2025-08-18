@@ -12,7 +12,7 @@ body {
 
 .form-container {
     /* Set the image as background */
-    background-image: url('recipet.pdf'); /* Updated image path */
+    background-image: url('recipet.png'); /* Updated image path */
     background-size: 100% 100%; /* Make background image fill the container exactly */
     background-repeat: no-repeat;
     background-position: center center;
