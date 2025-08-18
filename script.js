@@ -6,18 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputElements = printableForm.querySelectorAll('.form-input-overlay');
         const temporarySpans = [];
 
+        // Get the bounding rectangle of the printableForm once
+        const formRect = printableForm.getBoundingClientRect();
+
         // Step 1: Replace inputs with temporary spans containing their values
         inputElements.forEach(input => {
             const span = document.createElement('span');
-            // Get the computed styles of the input for accurate rendering
+            // Get the computed styles and bounding client rect of the input for accurate rendering
             const computedStyle = window.getComputedStyle(input);
+            const inputRect = input.getBoundingClientRect();
 
-            // Copy essential positioning and box model styles
+            // Calculate position relative to the printableForm container
             span.style.position = 'absolute';
-            span.style.top = computedStyle.top;
-            span.style.left = computedStyle.left;
-            span.style.width = computedStyle.width;
-            span.style.height = computedStyle.height;
+            span.style.top = (inputRect.top - formRect.top) + 'px';
+            span.style.left = (inputRect.left - formRect.left) + 'px';
+            span.style.width = inputRect.width + 'px';
+            span.style.height = inputRect.height + 'px';
             span.style.zIndex = computedStyle.zIndex; // Ensure it's on top
 
             // Copy text and visual styles for content rendering
@@ -29,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             span.style.borderRadius = computedStyle.borderRadius;
             span.style.fontFamily = computedStyle.fontFamily; // Ensure font consistency
             span.style.whiteSpace = 'nowrap'; // Prevent text from wrapping within the span
-            span.style.overflow = 'hidden'; // Hide overflow if text is too long (though width should prevent this)
+            span.style.overflow = 'hidden'; // Hide overflow if text is too long
             span.style.textOverflow = 'ellipsis'; // Add ellipsis if text is too long
 
             // Ensure no border/background from inputs for capture
