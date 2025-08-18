@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('downloadBtn');
     const printableForm = document.getElementById('printableForm');
 
-    downloadBtn.addEventListener('click', () => {
+    downloadBtn.addEventListener('click', async () => { // Made the function async
         const inputElements = printableForm.querySelectorAll('.form-input-overlay');
         const temporarySpans = [];
 
@@ -11,36 +11,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const span = document.createElement('span');
             const computedStyle = window.getComputedStyle(input);
 
-            // --- CRUCIAL CHANGE: Copy inline styles directly for positioning & sizing ---
-            // This ensures html2canvas uses the exact percentage values defined in index.html
-            span.style.position = 'absolute'; // Keep absolute positioning
+            // Copy inline styles directly for positioning & sizing
+            span.style.position = 'absolute';
             span.style.top = input.style.top;
             span.style.left = input.style.left;
             span.style.width = input.style.width;
             span.style.height = input.style.height;
-            // --- END CRUCIAL CHANGE ---
-
             span.style.zIndex = '999'; // Ensure it's on top of the background image
 
             // Copy text and visual styles for content rendering
-            span.style.fontSize = '0.78rem'; // Slightly adjusted for better fit
-            span.style.color = 'black'; // Explicitly set text color to ensure visibility
+            span.style.fontSize = '0.78rem';
+            span.style.color = 'black'; // Explicitly set text color
             span.style.textAlign = computedStyle.textAlign;
-            span.style.lineHeight = '1.2'; // <--- CRUCIAL FIX: Explicitly set unitless line-height for consistency
-            span.style.padding = '0'; // Remove any padding that might cause clipping
+            span.style.lineHeight = '1.2';
+            span.style.padding = '0';
             span.style.borderRadius = computedStyle.borderRadius;
-            span.style.fontFamily = computedStyle.fontFamily; // Ensure font consistency
-            span.style.whiteSpace = 'nowrap'; // Prevent text from wrapping within the span
-            span.style.overflow = 'hidden'; // Hide overflow if text is too long (less likely with increased width)
-            span.style.textOverflow = 'ellipsis'; // Add ellipsis if text is too long and hidden
-            span.style.boxSizing = 'border-box'; // Ensure consistent box model
-            // span.style.verticalAlign = 'middle'; // Removed as line-height and padding should handle vertical centering better
-
-            // Ensure no border/background from inputs for capture
-            span.style.backgroundColor = 'transparent';
-            span.style.border = 'none';
-            span.style.boxShadow = 'none';
-            span.style.outline = 'none';
+            span.style.fontFamily = computedStyle.fontFamily;
+            span.style.whiteSpace = 'nowrap';
+            span.style.overflow = 'hidden';
+            span.style.textOverflow = 'ellipsis';
+            span.style.boxSizing = 'border-box';
 
             span.style.pointerEvents = 'none'; // Make sure it's not interactive
 
@@ -48,9 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (input.type === 'date') {
                 if (input.value) {
                     const date = new Date(input.value);
-                    span.textContent = date.toLocaleDateString('en-GB'); // Example: 20/08/2025
+                    span.textContent = date.toLocaleDateString('en-GB');
                 } else {
-                    span.textContent = ''; // Empty if no date selected
+                    span.textContent = '';
                 }
             } else {
                 span.textContent = input.value;
@@ -61,37 +51,44 @@ document.addEventListener('DOMContentLoaded', () => {
             temporarySpans.push(span);
         });
 
-        // Step 2: Capture the form content with html2canvas
-        html2canvas(printableForm, {
-            scale: 10, // Increased scale for even higher resolution A4 output
-            logging: false, // Disable logging for cleaner console
-            useCORS: true, // Enable if your image is hosted elsewhere (not strictly needed for local uploads)
-            scrollX: -window.scrollX, // Account for scroll position
-            scrollY: -window.scrollY, // Account for scroll position
-            windowWidth: document.documentElement.offsetWidth, // Capture full width
-            windowHeight: document.documentElement.offsetHeight // Capture full height
-        }).then(canvas => {
-            const imgData = canvas.toDataURL('image/jpeg', 1.0); // Convert to JPEG with quality 1.0 (max)
-            const link = document.createElement('a');
-            link.download = 'filled_form_A4.jpeg'; // File name for download, indicating A4
-            link.href = imgData;
-            document.body.appendChild(link); // Append to body (necessary for Firefox)
-            link.click(); // Trigger the download
-            document.body.removeChild(link); // Clean up the temporary link
-
-            // Step 3: Clean up - remove temporary spans and show original inputs
-            temporarySpans.forEach(span => {
-                printableForm.removeChild(span);
-            });
-            inputElements.forEach(input => {
-                input.style.visibility = 'visible'; // Show the original input
+        try {
+            // Step 2: Capture the form content with html2canvas
+            const canvas = await html2canvas(printableForm, {
+                scale: 5, // Increased scale for even higher resolution canvas (crucial for PDF quality)
+                logging: false,
+                useCORS: true,
+                scrollX: -window.scrollX,
+                scrollY: -window.scrollY,
+                windowWidth: document.documentElement.offsetWidth,
+                windowHeight: document.documentElement.offsetHeight
             });
 
-        }).catch(error => {
-            console.error('Error generating image:', error);
-            // Provide user feedback without using alert()
+            // Step 3: Convert canvas to PDF using jsPDF
+            const imgData = canvas.toDataURL('image/jpeg', 1.0); // Get JPEG image data from canvas
+            
+            const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4'); // 'p' for portrait, 'mm' for millimeters, 'a4' for A4 size
+            const imgWidth = 210; // A4 width in mm
+            const pageHeight = 297; // A4 height in mm
+            const imgHeight = canvas.height * imgWidth / canvas.width; // Calculate image height to maintain aspect ratio
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save('filled_form_A4.pdf'); // Save as PDF
+
+        } catch (error) {
+            console.error('Error generating PDF:', error);
             const messageBox = document.createElement('div');
-            messageBox.textContent = 'Failed to generate image. Please try again.';
+            messageBox.textContent = 'Failed to generate PDF. Please try again.';
             messageBox.style.cssText = `
                 position: fixed;
                 top: 50%;
@@ -109,7 +106,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(messageBox);
             setTimeout(() => {
                 document.body.removeChild(messageBox);
-            }, 3000); // Remove message after 3 seconds
-        });
+            }, 3000);
+        } finally {
+            // Step 4: Clean up - remove temporary spans and show original inputs
+            temporarySpans.forEach(span => {
+                printableForm.removeChild(span);
+            });
+            inputElements.forEach(input => {
+                input.style.visibility = 'visible';
+            });
+        }
     });
 });
