@@ -83,14 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Load the original background image separately
             const backgroundImage = new Image();
             // Use a relative path to your high-resolution PNG/JPEG
-            backgroundImage.src = 'recipet.png'; // <-- Ensure this path is correct and file exists
+            backgroundImage.src = 'recipet.png'; // <-- UPDATED: Background image path changed to recipet.png
             
             await new Promise(resolve => {
                 backgroundImage.onload = () => {
                     // Add the original background image to the PDF first
                     // Scale it to fit the A4 page perfectly
-                    pdf.addImage(backgroundImage, 'JPEG', 0, 0, imgWidth, pageHeight);
-
+                    pdf.addImage(backgroundImage, 'PNG', 0, 0, imgWidth, pageHeight); // Use PNG for consistency with source
+                    
                     // Get the image data from the content canvas (which has only the text)
                     const contentImgData = contentCanvas.toDataURL('image/png', 1.0); // Use PNG for transparency of text over background
 
