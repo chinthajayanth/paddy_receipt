@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
             span.style.padding = computedStyle.padding; // Preserve padding
             span.style.borderRadius = computedStyle.borderRadius;
             span.style.fontFamily = computedStyle.fontFamily; // Ensure font consistency
+            span.style.whiteSpace = 'nowrap'; // Prevent text from wrapping within the span
+            span.style.overflow = 'hidden'; // Hide overflow if text is too long (though width should prevent this)
+            span.style.textOverflow = 'ellipsis'; // Add ellipsis if text is too long
 
             // Ensure no border/background from inputs for capture
             span.style.backgroundColor = 'transparent';
@@ -56,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Step 2: Capture the form content with html2canvas
         html2canvas(printableForm, {
-            scale: 2, // Increased scale for higher resolution A4 output
+            scale: 3, // Increased scale for higher resolution A4 output
             logging: false, // Disable logging for cleaner console
             useCORS: true, // Enable if your image is hosted elsewhere (not strictly needed for local uploads)
             scrollX: -window.scrollX, // Account for scroll position
