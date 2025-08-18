@@ -12,7 +12,7 @@ body {
 
 .form-container {
     /* Set the image as background */
-    background-image: url('recipet.png'); /* Updated image path */
+    background-image: url('recipet.png'); /* CORRECTED: Background image path changed to recipet.png */
     background-size: 100% 100%; /* Make background image fill the container exactly */
     background-repeat: no-repeat;
     background-position: center center;
@@ -41,7 +41,7 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.2); /* Light border to define input area */
     outline: none; /* Remove default focus outline */
     color: black; /* Text color */
-    font-size: 1.1rem; /* Adjust font size to fit the lines on the image */
+    font-size: 0.85rem; /* Adjusted font size here */
     padding: 0.1rem 0.3rem; /* Minimal padding inside the input */
     border-radius: 0.2rem; /* Small rounded corners */
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -59,7 +59,7 @@ body {
     color: white;
     padding: 0.75rem 1.5rem; /* py-3 px-6 */
     border-radius: 0.5rem; /* rounded-lg */
-    font-weight: 1000; /* font-bold */
+    font-weight: 700; /* font-bold */
     cursor: pointer;
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
