@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Load the original background image separately
             const backgroundImage = new Image();
             // Use a relative path to your high-resolution PNG/JPEG
-            backgroundImage.src = 'filled_form (2).jpg'; // <-- Ensure this path is correct and file exists
+            backgroundImage.src = 'recipet.png'; // <-- Ensure this path is correct and file exists
             
             await new Promise(resolve => {
                 backgroundImage.onload = () => {
