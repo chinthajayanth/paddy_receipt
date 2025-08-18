@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const span = document.createElement('span');
             const computedStyle = window.getComputedStyle(input);
 
-            // --- Copy inline styles directly for positioning & sizing ---
+            // --- CRUCIAL CHANGE: Copy inline styles directly for positioning & sizing ---
             // This ensures html2canvas uses the exact percentage values defined in index.html
             span.style.position = 'absolute'; // Keep absolute positioning
             span.style.top = input.style.top;
@@ -23,17 +23,18 @@ document.addEventListener('DOMContentLoaded', () => {
             span.style.zIndex = '999'; // Ensure it's on top of the background image
 
             // Copy text and visual styles for content rendering
-            span.style.fontSize = '0.8rem'; // Slightly adjusted for better fit, ensure it's not too large
+            span.style.fontSize = '0.78rem'; // Slightly adjusted for better fit
             span.style.color = 'black'; // Explicitly set text color to ensure visibility
             span.style.textAlign = computedStyle.textAlign;
-            span.style.lineHeight = '1.4em'; // <--- CRUCIAL FIX: Explicitly set more generous line-height
+            span.style.lineHeight = '1.2'; // <--- CRUCIAL FIX: Explicitly set unitless line-height for consistency
             span.style.padding = '0'; // Remove any padding that might cause clipping
             span.style.borderRadius = computedStyle.borderRadius;
             span.style.fontFamily = computedStyle.fontFamily; // Ensure font consistency
             span.style.whiteSpace = 'nowrap'; // Prevent text from wrapping within the span
             span.style.overflow = 'hidden'; // Hide overflow if text is too long (less likely with increased width)
             span.style.textOverflow = 'ellipsis'; // Add ellipsis if text is too long and hidden
-            span.style.verticalAlign = 'middle'; // Attempt to vertically center text within its box
+            span.style.boxSizing = 'border-box'; // Ensure consistent box model
+            // span.style.verticalAlign = 'middle'; // Removed as line-height and padding should handle vertical centering better
 
             // Ensure no border/background from inputs for capture
             span.style.backgroundColor = 'transparent';
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Step 2: Capture the form content with html2canvas
         html2canvas(printableForm, {
-            scale: 4, // Increased scale for even higher resolution A4 output
+            scale: 10, // Increased scale for even higher resolution A4 output
             logging: false, // Disable logging for cleaner console
             useCORS: true, // Enable if your image is hosted elsewhere (not strictly needed for local uploads)
             scrollX: -window.scrollX, // Account for scroll position
