@@ -9,22 +9,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // Step 1: Replace inputs with temporary spans containing their values
         inputElements.forEach(input => {
             const span = document.createElement('span');
-            // Copy relevant styles to the span for correct positioning and appearance
-            span.style.cssText = input.style.cssText; // Copy inline styles (top, left, width, height)
-            span.className = input.className; // Copy class for inherited styles (font-size, color etc.)
-            span.style.pointerEvents = 'none'; // Make sure it's not interactive
-            span.style.zIndex = '999'; // Ensure it's above the image
+            // Get the computed styles of the input for accurate rendering
+            const computedStyle = window.getComputedStyle(input);
 
-            // Ensure background is transparent for capture, and text color is black
+            // Copy essential positioning and box model styles
+            span.style.position = 'absolute';
+            span.style.top = computedStyle.top;
+            span.style.left = computedStyle.left;
+            span.style.width = computedStyle.width;
+            span.style.height = computedStyle.height;
+            span.style.zIndex = computedStyle.zIndex; // Ensure it's on top
+
+            // Copy text and visual styles for content rendering
+            span.style.fontSize = computedStyle.fontSize;
+            span.style.color = 'black'; // Explicitly set text color to ensure visibility
+            span.style.textAlign = computedStyle.textAlign;
+            span.style.lineHeight = computedStyle.lineHeight; // Crucial for vertical alignment
+            span.style.padding = computedStyle.padding; // Preserve padding
+            span.style.borderRadius = computedStyle.borderRadius;
+            span.style.fontFamily = computedStyle.fontFamily; // Ensure font consistency
+
+            // Ensure no border/background from inputs for capture
             span.style.backgroundColor = 'transparent';
             span.style.border = 'none';
             span.style.boxShadow = 'none';
             span.style.outline = 'none';
-            span.style.color = 'black'; // Explicitly set text color to ensure visibility
+
+            span.style.pointerEvents = 'none'; // Make sure it's not interactive
 
             // Set text content, handle date input display format
             if (input.type === 'date') {
-                // For date input, display in a readable format if a date is selected
                 if (input.value) {
                     const date = new Date(input.value);
                     span.textContent = date.toLocaleDateString('en-GB'); // Example: 20/08/2025
@@ -35,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 span.textContent = input.value;
             }
             
-            // Append span, hide input, and store span for later removal
             printableForm.appendChild(span);
             input.style.visibility = 'hidden'; // Hide the original input
             temporarySpans.push(span);
