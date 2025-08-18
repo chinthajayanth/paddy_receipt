@@ -6,35 +6,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputElements = printableForm.querySelectorAll('.form-input-overlay');
         const temporarySpans = [];
 
-        // Get the bounding rectangle of the printableForm once
-        const formRect = printableForm.getBoundingClientRect();
-
         // Step 1: Replace inputs with temporary spans containing their values
         inputElements.forEach(input => {
             const span = document.createElement('span');
-            // Get the computed styles and bounding client rect of the input for accurate rendering
             const computedStyle = window.getComputedStyle(input);
-            const inputRect = input.getBoundingClientRect();
 
-            // Calculate position relative to the printableForm container
-            span.style.position = 'absolute';
-            span.style.top = (inputRect.top - formRect.top) + 'px';
-            span.style.left = (inputRect.left - formRect.left) + 'px';
-            span.style.width = inputRect.width + 'px';
-            span.style.height = inputRect.height + 'px';
-            span.style.zIndex = computedStyle.zIndex; // Ensure it's on top
+            // --- CRUCIAL CHANGE: Copy inline styles directly for positioning & sizing ---
+            // This ensures html2canvas uses the exact percentage values defined in index.html
+            span.style.position = 'absolute'; // Keep absolute positioning
+            span.style.top = input.style.top;
+            span.style.left = input.style.left;
+            span.style.width = input.style.width;
+            span.style.height = input.style.height;
+            // --- END CRUCIAL CHANGE ---
+
+            span.style.zIndex = '999'; // Ensure it's on top of the background image
 
             // Copy text and visual styles for content rendering
-            span.style.fontSize = computedStyle.fontSize;
+            span.style.fontSize = '0.8rem'; // Slightly adjusted for better fit, ensure it's not too large
             span.style.color = 'black'; // Explicitly set text color to ensure visibility
             span.style.textAlign = computedStyle.textAlign;
-            span.style.lineHeight = computedStyle.lineHeight; // Crucial for vertical alignment
-            span.style.padding = computedStyle.padding; // Preserve padding
+            span.style.lineHeight = 'normal'; // Explicitly set line-height to 'normal' or '1.2em' for better vertical fit
+            span.style.padding = '0'; // Remove any padding that might cause clipping
             span.style.borderRadius = computedStyle.borderRadius;
             span.style.fontFamily = computedStyle.fontFamily; // Ensure font consistency
             span.style.whiteSpace = 'nowrap'; // Prevent text from wrapping within the span
-            span.style.overflow = 'hidden'; // Hide overflow if text is too long
-            span.style.textOverflow = 'ellipsis'; // Add ellipsis if text is too long
+            span.style.overflow = 'hidden'; // Hide overflow if text is too long (less likely with increased width)
+            span.style.textOverflow = 'ellipsis'; // Add ellipsis if text is too long and hidden
 
             // Ensure no border/background from inputs for capture
             span.style.backgroundColor = 'transparent';
@@ -63,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Step 2: Capture the form content with html2canvas
         html2canvas(printableForm, {
-            scale: 3, // Increased scale for higher resolution A4 output
+            scale: 4, // Increased scale for even higher resolution A4 output
             logging: false, // Disable logging for cleaner console
             useCORS: true, // Enable if your image is hosted elsewhere (not strictly needed for local uploads)
             scrollX: -window.scrollX, // Account for scroll position
