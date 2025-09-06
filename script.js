@@ -56,20 +56,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Number': { x: 18.9, y: 57 },
                         'rajashriInput': { x: 21, y: 62.5 },
                         'dateInput': { x: 173.25, y: 57 },
-                        'paymentNumber': { x: 95, y: 82 },
-                        'ownerName': { x: 95, y: 95 },
+                        'paymentNumber': { x: 95, y: 83 },
+                        'ownerName': { x: 95, y: 95.5 },
                         'village': { x: 95, y: 107.7 },
-                        'ownerFatherName': { x: 95, y: 119.2 },
-                        'ownerAddress': { x: 95, y: 130 },
-                        'totalLand': { x: 95, y: 141.3 },
-                        'totalWeight': { x: 95, y: 152.3 },
-                        'cropType': { x: 95, y: 164.0 },
-                        'landNumber': { x: 95, y: 174.5 },
-                        'ownerNameAgain': { x: 95, y: 186.6 },
-                        'brokerName': { x: 95, y: 199.8 },
-                        'totalRent': { x: 95, y: 210.5 },
-                        'advance': { x: 95, y: 226.75 },
-                        'remainingRent': { x: 95, y: 238.6 }
+                        'ownerFatherName': { x: 95, y: 120.2 },
+                        'ownerAddress': { x: 95, y: 132 },
+                        'totalLand': { x: 95, y: 142.3 },
+                        'totalWeight': { x: 95, y: 154.3 },
+                        'cropType': { x: 95, y: 163.0 },
+                        'landNumber': { x: 95, y: 178.5 },
+                        'ownerNameAgain': { x: 95, y: 191.6 },
+                        'brokerName': { x: 95, y: 204.8 },
+                        'totalRent': { x: 95, y: 215.5 },
+                        'advance': { x: 95, y: 229.75 },
+                        'remainingRent': { x: 95, y: 241.6 }
                     };
 
                     // Draw each piece of text onto the PDF
