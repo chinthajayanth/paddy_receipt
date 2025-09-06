@@ -21,32 +21,62 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.body.appendChild(loadingBox);
 
-        // Store original styles to restore them later
-        const originalInputStyles = [];
+        // Find all form inputs that need to be captured
         const inputElements = printableForm.querySelectorAll('.form-input-overlay');
+        const temporarySpans = [];
+        const originalInputs = [];
 
-        // Temporarily modify the inputs for a clean capture
+        // Temporarily replace input fields with text-only spans for better capture.
         inputElements.forEach(input => {
-            // Store original styles
-            originalInputStyles.push({ 
-                input: input, 
-                backgroundColor: input.style.backgroundColor,
-                border: input.style.border
-            });
-            // Change styles for capture
-            input.style.backgroundColor = 'transparent';
-            input.style.border = 'none';
-            input.style.color = 'black'; // Ensure text is visible
+            const span = document.createElement('span');
+            const computedStyle = window.getComputedStyle(input);
+            const rect = input.getBoundingClientRect();
+
+            // Set the styles and position using computed values for accuracy on all devices
+            span.style.position = 'absolute';
+            span.style.top = `${input.offsetTop}px`;
+            span.style.left = `${input.offsetLeft}px`;
+            span.style.width = `${input.offsetWidth}px`;
+            span.style.height = `${input.offsetHeight}px`;
+
+            // Copy necessary visual styles
+            span.style.color = 'black';
+            span.style.fontSize = computedStyle.fontSize;
+            span.style.lineHeight = computedStyle.lineHeight;
+            span.style.textAlign = computedStyle.textAlign;
+            span.style.padding = computedStyle.padding;
+            span.style.fontFamily = computedStyle.fontFamily;
+            span.style.whiteSpace = 'nowrap';
+            span.style.overflow = 'hidden';
+            span.style.textOverflow = 'ellipsis';
+            span.style.boxSizing = 'border-box';
+            span.style.pointerEvents = 'none';
+
+            // Set the content of the span
+            if (input.type === 'date') {
+                if (input.value) {
+                    const date = new Date(input.value);
+                    span.textContent = date.toLocaleDateString('en-GB');
+                } else {
+                    span.textContent = '';
+                }
+            } else {
+                span.textContent = input.value;
+            }
+
+            // Append the new span and hide the original input field.
+            printableForm.appendChild(span);
+            input.style.visibility = 'hidden';
+            temporarySpans.push(span);
+            originalInputs.push(input);
         });
 
         try {
-            // A more robust approach: capture the entire form (background + content)
-            // in a single, high-quality canvas image. This prevents alignment issues.
+            // Capture the entire form (background + content) in a single, high-quality canvas image.
             const canvas = await html2canvas(printableForm, {
-                scale: 4, // Higher scale for a clearer image
+                scale: 4, 
                 logging: false, 
                 useCORS: true,
-                allowTaint: true // Allows capturing images from different origins
             });
 
             // Convert the canvas image to a data URL
@@ -61,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const pdfHeight = pdf.internal.pageSize.getHeight();
 
             // Add the image to the PDF.
-            // The image will be scaled to fit the A4 dimensions.
             pdf.addImage(imageData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
             // Save the PDF file
@@ -90,12 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.removeChild(messageBox);
             }, 3000);
         } finally {
-            // Clean up: restore original input styles
+            // Clean up: remove temporary spans and show original inputs
             document.body.removeChild(loadingBox);
-            originalInputStyles.forEach(item => {
-                item.input.style.backgroundColor = item.backgroundColor;
-                item.input.style.border = item.border;
-                item.input.style.color = ''; // Remove the enforced black color
+            temporarySpans.forEach(span => {
+                if (span.parentNode) {
+                    printableForm.removeChild(span);
+                }
+            });
+            originalInputs.forEach(input => {
+                input.style.visibility = 'visible';
             });
         }
     });
