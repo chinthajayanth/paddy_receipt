@@ -21,85 +21,66 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.body.appendChild(loadingBox);
 
-        // Find all form inputs that need to be captured
-        const inputElements = printableForm.querySelectorAll('.form-input-overlay');
-        const temporarySpans = [];
-
-        // Temporarily replace input fields with text-only spans for better capture
-        inputElements.forEach(input => {
-            const span = document.createElement('span');
-            const computedStyle = window.getComputedStyle(input);
-            
-            // Set the styles and position using computed values for accuracy
-            span.style.position = 'absolute';
-            span.style.top = input.style.top;
-            span.style.left = input.style.left;
-            span.style.width = input.style.width;
-            span.style.height = input.style.height;
-
-            // Copy necessary visual styles
-            span.style.color = 'black';
-            span.style.fontSize = computedStyle.fontSize;
-            span.style.lineHeight = computedStyle.lineHeight;
-            span.style.textAlign = computedStyle.textAlign;
-            span.style.padding = computedStyle.padding;
-            span.style.fontFamily = computedStyle.fontFamily;
-            span.style.whiteSpace = 'nowrap';
-            span.style.overflow = 'hidden';
-            span.style.textOverflow = 'ellipsis';
-            span.style.boxSizing = 'border-box';
-            span.style.pointerEvents = 'none';
-
-            // Set the content of the span
-            if (input.type === 'date') {
-                if (input.value) {
-                    const date = new Date(input.value);
-                    span.textContent = date.toLocaleDateString('en-GB');
-                } else {
-                    span.textContent = '';
-                }
-            } else {
-                span.textContent = input.value;
-            }
-
-            // Append the new span and hide the original input field.
-            printableForm.appendChild(span);
-            input.style.visibility = 'hidden';
-            temporarySpans.push(span);
-        });
-
-        // Hide the original background image of the printable form
-        const originalBackgroundImage = printableForm.style.backgroundImage;
-        printableForm.style.backgroundImage = 'none';
-
         try {
-            // Capture only the text content using html2canvas
-            const contentCanvas = await html2canvas(printableForm, {
-                scale: 1, // Use a reasonable scale to balance quality and file size
-                logging: false, 
-                useCORS: true,
-                backgroundColor: null, // Ensures transparency
-            });
-
-            const contentImgData = contentCanvas.toDataURL('image/png', 0.1);
-
-            // Create the PDF document
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
+
+            // Dimensions of A4 in mm
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            
+
             // Load the original background image
             const backgroundImage = new Image();
-            backgroundImage.src = 'recipet.png';
+            backgroundImage.src = 'recipet-min.png';
             
             await new Promise(resolve => {
                 backgroundImage.onload = () => {
+                    // Add the original image to the PDF, letting jsPDF handle the scaling for best quality.
                     pdf.addImage(backgroundImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
                     
-                    // Overlay the text content on top of the background
-                    const contentImgHeight = contentCanvas.height * pdfWidth / contentCanvas.width;
-                    pdf.addImage(contentImgData, 'PNG', 0, 0, pdfWidth, contentImgHeight, null, 'FAST');
+                    // Set font styles for the text
+                    pdf.setFont('helvetica'); // Use a standard font
+                    pdf.setFontSize(10); // A readable font size
+                    pdf.setTextColor(0, 0, 0); // Black text
+
+                    // Get values and positions from the form
+                    const inputValues = {};
+                    const inputElements = printableForm.querySelectorAll('.form-input-overlay');
+                    inputElements.forEach(input => {
+                        inputValues[input.id] = input.value;
+                    });
+                    
+                    // Manually map each input field's ID to its exact millimeter coordinate on the A4 page
+                    // These values are calculated from the percentages in your CSS
+                    const coordinates = {
+                        'Number': { x: 18.9, y: 49.9 },
+                        'rajashriInput': { x: 21, y: 61.7 },
+                        'dateInput': { x: 173.25, y: 49.3 },
+                        'paymentNumber': { x: 94.5, y: 92.1 },
+                        'ownerName': { x: 94.5, y: 102.7 },
+                        'village': { x: 94.5, y: 113.7 },
+                        'ownerFatherName': { x: 94.5, y: 124.7 },
+                        'ownerAddress': { x: 94.5, y: 135.5 },
+                        'totalLand': { x: 94.5, y: 146.3 },
+                        'totalWeight': { x: 94.5, y: 156.8 },
+                        'cropType': { x: 94.5, y: 168.0 },
+                        'landNumber': { x: 94.5, y: 178.5 },
+                        'ownerNameAgain': { x: 94.5, y: 189.6 },
+                        'brokerName': { x: 94.5, y: 200.8 },
+                        'totalRent': { x: 94.5, y: 211.5 },
+                        'advance': { x: 94.5, y: 222.75 },
+                        'remainingRent': { x: 94.5, y: 234.6 }
+                    };
+
+                    // Draw each piece of text onto the PDF
+                    for (const id in coordinates) {
+                        const { x, y } = coordinates[id];
+                        const textContent = inputValues[id] || '';
+                        if (textContent) {
+                            pdf.text(textContent, x, y);
+                        }
+                    }
+
                     resolve();
                 };
                 backgroundImage.onerror = () => {
@@ -134,17 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.removeChild(messageBox);
             }, 3000);
         } finally {
-            // Clean up: restore original background image and inputs
             document.body.removeChild(loadingBox);
-            printableForm.style.backgroundImage = originalBackgroundImage;
-            temporarySpans.forEach(span => {
-                if (span.parentNode) {
-                    printableForm.removeChild(span);
-                }
-            });
-            inputElements.forEach(input => {
-                input.style.visibility = 'visible';
-            });
         }
     });
 });
