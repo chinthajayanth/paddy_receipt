@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(messageBox);
             setTimeout(() => {
                 document.body.removeChild(messageBox);
+                
             }, 3000);
         } finally {
             // Clean up: remove temporary spans and show original inputs
