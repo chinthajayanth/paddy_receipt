@@ -24,20 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // Find all form inputs that need to be captured
         const inputElements = printableForm.querySelectorAll('.form-input-overlay');
         const temporarySpans = [];
-        const originalInputs = [];
 
-        // Temporarily replace input fields with text-only spans for better capture.
+        // Temporarily replace input fields with text-only spans for better capture
         inputElements.forEach(input => {
             const span = document.createElement('span');
             const computedStyle = window.getComputedStyle(input);
-            const rect = input.getBoundingClientRect();
-
-            // Set the styles and position using computed values for accuracy on all devices
+            
+            // Set the styles and position using computed values for accuracy
             span.style.position = 'absolute';
-            span.style.top = `${input.offsetTop}px`;
-            span.style.left = `${input.offsetLeft}px`;
-            span.style.width = `${input.offsetWidth}px`;
-            span.style.height = `${input.offsetHeight}px`;
+            span.style.top = input.style.top;
+            span.style.left = input.style.left;
+            span.style.width = input.style.width;
+            span.style.height = input.style.height;
 
             // Copy necessary visual styles
             span.style.color = 'black';
@@ -68,30 +66,47 @@ document.addEventListener('DOMContentLoaded', () => {
             printableForm.appendChild(span);
             input.style.visibility = 'hidden';
             temporarySpans.push(span);
-            originalInputs.push(input);
         });
 
+        // Hide the original background image of the printable form
+        const originalBackgroundImage = printableForm.style.backgroundImage;
+        printableForm.style.backgroundImage = 'none';
+
         try {
-            // Capture the entire form (background + content) in a single, high-quality canvas image.
-            const canvas = await html2canvas(printableForm, {
-                scale: 4, 
+            // Capture only the text content using html2canvas
+            const contentCanvas = await html2canvas(printableForm, {
+                scale: 1, // Use a reasonable scale to balance quality and file size
                 logging: false, 
                 useCORS: true,
+                backgroundColor: null, // Ensures transparency
             });
 
-            // Convert the canvas image to a data URL
-            const imageData = canvas.toDataURL('image/jpeg', 1.0);
+            const contentImgData = contentCanvas.toDataURL('image/png', 0.1);
 
             // Create the PDF document
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-
-            // Get the width and height of the A4 page in the PDF
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-
-            // Add the image to the PDF.
-            pdf.addImage(imageData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            
+            // Load the original background image
+            const backgroundImage = new Image();
+            backgroundImage.src = 'recipet.png';
+            
+            await new Promise(resolve => {
+                backgroundImage.onload = () => {
+                    pdf.addImage(backgroundImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    
+                    // Overlay the text content on top of the background
+                    const contentImgHeight = contentCanvas.height * pdfWidth / contentCanvas.width;
+                    pdf.addImage(contentImgData, 'PNG', 0, 0, pdfWidth, contentImgHeight, null, 'FAST');
+                    resolve();
+                };
+                backgroundImage.onerror = () => {
+                    console.error("Failed to load background image for PDF.");
+                    resolve();
+                };
+            });
 
             // Save the PDF file
             pdf.save('filled_form_A4.pdf');
@@ -117,17 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(messageBox);
             setTimeout(() => {
                 document.body.removeChild(messageBox);
-                
             }, 3000);
         } finally {
-            // Clean up: remove temporary spans and show original inputs
+            // Clean up: restore original background image and inputs
             document.body.removeChild(loadingBox);
+            printableForm.style.backgroundImage = originalBackgroundImage;
             temporarySpans.forEach(span => {
                 if (span.parentNode) {
                     printableForm.removeChild(span);
                 }
             });
-            originalInputs.forEach(input => {
+            inputElements.forEach(input => {
                 input.style.visibility = 'visible';
             });
         }
