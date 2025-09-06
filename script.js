@@ -53,23 +53,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Manually map each input field's ID to its exact millimeter coordinate on the A4 page
                     // These values are calculated from the percentages in your CSS
                     const coordinates = {
-                        'Number': { x: 18.9, y: 49.9 },
-                        'rajashriInput': { x: 21, y: 61.7 },
-                        'dateInput': { x: 173.25, y: 49.3 },
-                        'paymentNumber': { x: 94.5, y: 92.1 },
-                        'ownerName': { x: 94.5, y: 102.7 },
-                        'village': { x: 94.5, y: 113.7 },
-                        'ownerFatherName': { x: 94.5, y: 124.7 },
-                        'ownerAddress': { x: 94.5, y: 135.5 },
-                        'totalLand': { x: 94.5, y: 146.3 },
-                        'totalWeight': { x: 94.5, y: 156.8 },
-                        'cropType': { x: 94.5, y: 168.0 },
-                        'landNumber': { x: 94.5, y: 178.5 },
-                        'ownerNameAgain': { x: 94.5, y: 189.6 },
-                        'brokerName': { x: 94.5, y: 200.8 },
-                        'totalRent': { x: 94.5, y: 211.5 },
-                        'advance': { x: 94.5, y: 222.75 },
-                        'remainingRent': { x: 94.5, y: 234.6 }
+                        'Number': { x: 18.9, y: 55 },
+                        'rajashriInput': { x: 21, y: 62 },
+                        'dateInput': { x: 173.25, y: 55 },
+                        'paymentNumber': { x: 95, y: 89 },
+                        'ownerName': { x: 95, y: 90.7 },
+                        'village': { x: 95, y: 103.7 },
+                        'ownerFatherName': { x: 95, y: 114.7 },
+                        'ownerAddress': { x: 95, y: 125.5 },
+                        'totalLand': { x: 95, y: 136.3 },
+                        'totalWeight': { x: 95, y: 146.8 },
+                        'cropType': { x: 95, y: 158.0 },
+                        'landNumber': { x: 95, y: 168.5 },
+                        'ownerNameAgain': { x: 95, y: 179.6 },
+                        'brokerName': { x: 95, y: 190.8 },
+                        'totalRent': { x: 95, y: 201.5 },
+                        'advance': { x: 95, y: 212.75 },
+                        'remainingRent': { x: 95, y: 224.6 }
                     };
 
                     // Draw each piece of text onto the PDF
