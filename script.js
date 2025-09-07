@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         'ownerFatherName': { x: 95, y: 120.2 },
                         'ownerAddress': { x: 95, y: 132 },
                         'totalLand': { x: 95, y: 142.3 },
-                        'totalWeight': { x: 95, y: 152.3 },
-                        'cropType': { x: 95, y: 167.0 },
+                        'totalWeight': { x: 95, y: 153.3 },
+                        'cropType': { x: 95, y: 169.0 },
                         'landNumber': { x: 95, y: 181.5 },
                         'ownerNameAgain': { x: 95, y: 193.6 },
                         'brokerName': { x: 95, y: 206.8 },
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Save the PDF file
-            pdf.save('filled_form_A4.pdf');
+            pdf.save('keerai.pdf');
 
         } catch (error) {
             console.error('Error generating PDF:', error);
