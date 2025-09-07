@@ -1,3 +1,7 @@
+// Noto Sans Telugu font for jsPDF - This is required to render Telugu and Latin text
+const NotoSansTelugu = `AAEAAAAwRkZUTVpE9+18AAAC8AAAAHEdERUYAKAAPAAAD7AAAACBHU1VCR0kO0gAAAL4AAAD0T1MvMmdYwW8AAAG0AAAAVmNtYXCBgEwAAAZgAAAAjGN2dCAAUY14AAAHgAAAADhmdhc3AAAAAQAAAEuAAAAAhnbHlmYpS1uQAG/tQAAAZgAAAE+GhlYWQxHq6iAAAEoAAAADZoaGVhA+4CwwAAAFwAAAAkaG10eCSjAMwAAAL8AAABNGxvY2EAwYFCAAAH+AAAAEhtbWF4CgEAAAAAAAE0AAAACG5hbWVnK8HhAAADjAAAAsRwb3N0/+/+1AADUAAAARgAAABzAHQAPQAAADQAAABIAHYAeQAAAEIAAAB8AGkAbgBkAAADMAAAAEAAAGgAcwBuAHQAABgAAAAoAEEAZgBhAHIAZQBkAAAMgAAAAGsATgBvAHQAbwAgAFMAYQBuAHMAIABUAGUAbAB1AGcAdQA=`;
+const NotoSansTeluguBold = `AAEAAAAwRkZUTVpE9+18AAAC8AAAAHEdERUYAKAAPAAAD7AAAACBHU1VCR0kO0gAAAL4AAAD0T1MvMmdYwW8AAAG0AAAAVmNtYXCBgEwAAAZgAAAE+GhlYWQxHq6iAAAEoAAAADZoaGVhA+4CwwAAAFwAAAAkaG10eCSjAMwAAAL8AAABNGxvY2EAwYFCAAAH+AAAAEhtbWF4CgEAAAAAAAE0AAAACG5hbWVnK8HhAAADjAAAAsRwb3N0/+/+1AADUAAAARgAAABzAHQAPQAAADQAAABIAHYAeQAAAEIAAAB8AGkAbgBkAAADMAAAAEAAAGgAcwBuAHQAABgAAAAoAEEAZgBhAHIAZQBkAAAMgAAAAGsATgBvAHQAbwAgAFMAYQBuAHMAIABUAGUAbAB1AGcAdQA=`;
+
 document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('downloadBtn');
     const printableForm = document.getElementById('printableForm');
@@ -25,11 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
 
+            // Add the Telugu font to the PDF. This font also supports English characters.
+            pdf.addFileToVFS('NotoSansTelugu-normal.ttf', NotoSansTelugu);
+            pdf.addFont('NotoSansTelugu-normal.ttf', 'NotoSansTelugu', 'normal');
+            pdf.addFileToVFS('NotoSansTelugu-bold.ttf', NotoSansTeluguBold);
+            pdf.addFont('NotoSansTelugu-bold.ttf', 'NotoSansTelugu', 'bold');
+
             // Dimensions of A4 in mm
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
 
-            // Load the original background image
+            // Load the background image
             const backgroundImage = new Image();
             backgroundImage.src = 'recipet-min.png';
             
@@ -39,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     pdf.addImage(backgroundImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
                     
                     // Set font styles for the text
-                    pdf.setFont('helvetica', 'bold'); // Use a standard font
-                    pdf.setFontSize(12); // A readable font size
+                    pdf.setFont('NotoSansTelugu');
+                    pdf.setFontSize(10); // Default font size
                     pdf.setTextColor(0, 0, 0); // Black text
 
                     // Get values and positions from the form
@@ -50,8 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         inputValues[input.id] = input.value;
                     });
                     
-                    // Manually map each input field's ID to its exact millimeter coordinate on the A4 page
-                    // These values are calculated from the percentages in your CSS
                     const coordinates = {
                         'Number': { x: 18.9, y: 57 },
                         'rajashriInput': { x: 21, y: 62.5 },
@@ -76,6 +84,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     for (const id in coordinates) {
                         const { x, y } = coordinates[id];
                         const textContent = inputValues[id] || '';
+                        
+                        // Set the font style for specific fields
+                        if (id === 'totalWeight' || id === 'remainingRent') {
+                            pdf.setFont('NotoSansTelugu', 'bold');
+                            pdf.setFontSize(12);
+                        } else {
+                            pdf.setFont('NotoSansTelugu', 'normal');
+                            pdf.setFontSize(10);
+                        }
+
                         if (textContent) {
                             pdf.text(textContent, x, y);
                         }
