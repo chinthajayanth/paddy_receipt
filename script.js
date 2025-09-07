@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         inputValues[input.id] = input.value;
                     });
                     
+                    // IMPORTANT: The IDs here MUST match the IDs in your HTML input fields for the data to be captured.
                     const coordinates = {
                         'Number': { x: 18.9, y: 57 },
                         'rajashriInput': { x: 21, y: 62.5 },
