@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     pdf.addImage(backgroundImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
                     
                     // Set font styles for the text
-                    pdf.setFont('helvetica'); // Use a standard font
-                    pdf.setFontSize(10); // A readable font size
+                    pdf.setFont('helvetica', 'bold'); // Use a standard font
+                    pdf.setFontSize(12); // A readable font size
                     pdf.setTextColor(0, 0, 0); // Black text
 
                     // Get values and positions from the form
@@ -62,14 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         'ownerFatherName': { x: 95, y: 120.2 },
                         'ownerAddress': { x: 95, y: 132 },
                         'totalLand': { x: 95, y: 142.3 },
-                        'totalWeight': { x: 95, y: 154.3 },
-                        'cropType': { x: 95, y: 163.0 },
-                        'landNumber': { x: 95, y: 178.5 },
-                        'ownerNameAgain': { x: 95, y: 191.6 },
-                        'brokerName': { x: 95, y: 204.8 },
-                        'totalRent': { x: 95, y: 215.5 },
-                        'advance': { x: 95, y: 229.75 },
-                        'remainingRent': { x: 95, y: 241.6 }
+                        'totalWeight': { x: 95, y: 152.3 },
+                        'cropType': { x: 95, y: 167.0 },
+                        'landNumber': { x: 95, y: 181.5 },
+                        'ownerNameAgain': { x: 95, y: 193.6 },
+                        'brokerName': { x: 95, y: 206.8 },
+                        'totalRent': { x: 95, y: 218.5 },
+                        'advance': { x: 95, y: 230.75 },
+                        'remainingRent': { x: 95, y: 243.6 }
                     };
 
                     // Draw each piece of text onto the PDF
